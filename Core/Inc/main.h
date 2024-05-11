@@ -65,10 +65,10 @@ void Error_Handler(void);
 #define CV2_GPIO_Port GPIOA
 #define MOD2_Pin GPIO_PIN_3
 #define MOD2_GPIO_Port GPIOA
-#define TOGGLE_Pin GPIO_PIN_12
-#define TOGGLE_GPIO_Port GPIOB
-#define SD_CS_Pin GPIO_PIN_8
-#define SD_CS_GPIO_Port GPIOA
+#define SD_CS_Pin GPIO_PIN_12
+#define SD_CS_GPIO_Port GPIOB
+#define TOGGLE_SW_Pin GPIO_PIN_8
+#define TOGGLE_SW_GPIO_Port GPIOA
 #define ENC2_L_Pin GPIO_PIN_9
 #define ENC2_L_GPIO_Port GPIOA
 #define ENC2_R_Pin GPIO_PIN_10
