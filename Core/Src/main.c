@@ -142,7 +142,10 @@ int main(void)
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
   // start the DMA stream
-
+  HAL_StatusTypeDef result = HAL_I2S_Transmit_DMA(&hi2s2, (uint16_t*)dacData, BUFFER_SIZE);
+  if(result != HAL_OK){
+	  printf("Failed to initialize I2S!\n");
+  }
 
   /* USER CODE END 2 */
 
@@ -150,6 +153,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if(audioDataReadyFlag){
+		  processAudioBuffer();
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
