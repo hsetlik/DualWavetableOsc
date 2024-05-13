@@ -102,7 +102,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     PA2     ------> ADC1_IN2
     PA3     ------> ADC1_IN3
     */
-    GPIO_InitStruct.Pin = CV1_Pin|MOD1_Pin|CV2_Pin|MOD2_Pin;
+    GPIO_InitStruct.Pin = CV2_Pin|MOD2_Pin|MOD1_Pin|CV1_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -136,7 +136,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     PA2     ------> ADC1_IN2
     PA3     ------> ADC1_IN3
     */
-    HAL_GPIO_DeInit(GPIOA, CV1_Pin|MOD1_Pin|CV2_Pin|MOD2_Pin);
+    HAL_GPIO_DeInit(GPIOA, CV2_Pin|MOD2_Pin|MOD1_Pin|CV1_Pin);
 
   /* USER CODE BEGIN ADC1_MspDeInit 1 */
 
@@ -269,10 +269,10 @@ void HAL_I2S_MspInit(I2S_HandleTypeDef* hi2s)
     hdma_spi1_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
     hdma_spi1_tx.Init.PeriphInc = DMA_PINC_DISABLE;
     hdma_spi1_tx.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_spi1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-    hdma_spi1_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    hdma_spi1_tx.Init.Mode = DMA_NORMAL;
-    hdma_spi1_tx.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_spi1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_spi1_tx.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_spi1_tx.Init.Mode = DMA_CIRCULAR;
+    hdma_spi1_tx.Init.Priority = DMA_PRIORITY_HIGH;
     hdma_spi1_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
     if (HAL_DMA_Init(&hdma_spi1_tx) != HAL_OK)
     {
