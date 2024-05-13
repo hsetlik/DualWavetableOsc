@@ -33,6 +33,7 @@
 /* USER CODE BEGIN PD */
 
 #define BUFFER_SIZE 128
+#define FLOAT_TO_INT16 32768.0f
 
 /* USER CODE END PD */
 
@@ -68,21 +69,40 @@ static void MX_I2S1_Init(void);
 static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
 
+// renders the next chunk of the audio buffers to give to the DMA
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 // I2S callbacks
-void HAL_I2S_TxHalfCpltCallback(I2S_HandleTypeDef *hi2s){
+// transmit is half complete
+void HAL_I2S_TxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
+{
 	outBufPtr = &dacData[0];
 	audioDataReadyFlag = 1;
 }
 
-void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s){
+
+// transmit is complete
+void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s)
+{
 	outBufPtr = &dacData[BUFFER_SIZE / 2];
 	audioDataReadyFlag = 1;
 }
 
+
+void processAudioBuffer()
+{
+	static float leftOut, rightOut;
+	for(uint8_t i = 0; i < (BUFFER_SIZE / 2) - 1; i += 2){
+		///TODO: logic to determine the value of the samples goes here
+		dacData[i] = (int16_t)(leftOut * FLOAT_TO_INT16);
+		dacData[i + 1] = (int16_t)(rightOut * FLOAT_TO_INT16);
+	}
+	audioDataReadyFlag = 0;
+
+}
 
 /* USER CODE END 0 */
 
@@ -121,6 +141,8 @@ int main(void)
   MX_I2S1_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
+  // start the DMA stream
+
 
   /* USER CODE END 2 */
 
@@ -372,7 +394,17 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, LED_GRN_Pin|LED_RED_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(CH_BTN_GPIO_Port, CH_BTN_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : LED_GRN_Pin LED_RED_Pin */
+  GPIO_InitStruct.Pin = LED_GRN_Pin|LED_RED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : SD_CS_Pin ENC2_B_Pin ENC1_B_Pin MODE_BTN_Pin */
   GPIO_InitStruct.Pin = SD_CS_Pin|ENC2_B_Pin|ENC1_B_Pin|MODE_BTN_Pin;

@@ -65,6 +65,10 @@ void Error_Handler(void);
 #define MOD1_GPIO_Port GPIOA
 #define CV1_Pin GPIO_PIN_3
 #define CV1_GPIO_Port GPIOA
+#define LED_GRN_Pin GPIO_PIN_1
+#define LED_GRN_GPIO_Port GPIOB
+#define LED_RED_Pin GPIO_PIN_2
+#define LED_RED_GPIO_Port GPIOB
 #define SD_CS_Pin GPIO_PIN_12
 #define SD_CS_GPIO_Port GPIOB
 #define CH_BTN_Pin GPIO_PIN_8
