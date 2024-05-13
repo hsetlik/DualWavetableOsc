@@ -6,6 +6,20 @@
  */
 #include "StatusLEDs.h"
 
+StatusLEDs::StatusLEDs() :
+ioType(nullptr),
+redPin(0),
+grnPin(0),
+redState(0),
+grnState(0),
+lastRedToggle(0),
+lastGrnToggle(0),
+initializedFlag(0),
+status(Waiting)
+{
+
+}
+
 StatusLEDs::StatusLEDs(GPIO_TypeDef* gpio, uint16_t red, uint16_t green) :
 ioType(gpio),
 redPin(red),
@@ -13,10 +27,19 @@ grnPin(green),
 redState(0),
 grnState(0),
 lastRedToggle(0),
-lastGreenToggle(0),
+lastGrnToggle(0),
+initializedFlag(1),
 status(Waiting)
 {
 
+}
+
+void StatusLEDs::init(GPIO_TypeDef* gpio, uint16_t red, uint16_t green)
+{
+	ioType = gpio;
+	redPin = red;
+	grnPin = green;
+	initializedFlag = 1;
 }
 
 
@@ -77,6 +100,46 @@ void StatusLEDs::tick(uint32_t ms)
 	}
 }
 
+//------------------------------------------------------------
 
+status_led_t create_status_led()
+{
+	return new StatusLEDs();
+}
 
+void destroy_status_led(status_led_t led)
+{
+	StatusLEDs* typedPtr = static_cast<StatusLEDs*>(led);
+	delete typedPtr;
+}
+
+void init_status_led(status_led_t led, GPIO_TypeDef* gpio, uint16_t red, uint16_t green)
+{
+	StatusLEDs* typedPtr = static_cast<StatusLEDs*>(led);
+	typedPtr->init(gpio, red, green);
+}
+
+void tick_status_led(status_led_t led, uint32_t ms)
+{
+	StatusLEDs* typedPtr = static_cast<StatusLEDs*>(led);
+	typedPtr->tick(ms);
+}
+
+void status_normal(status_led_t led)
+{
+	StatusLEDs* typedPtr = static_cast<StatusLEDs*>(led);
+	typedPtr->setStatus(DeviceStatus::Normal);
+}
+
+void status_start_wait(status_led_t led)
+{
+	StatusLEDs* typedPtr = static_cast<StatusLEDs*>(led);
+	typedPtr->setStatus(DeviceStatus::Waiting);
+}
+
+void status_error(status_led_t led)
+{
+	StatusLEDs* typedPtr = static_cast<StatusLEDs*>(led);
+	typedPtr->setStatus(DeviceStatus::Error);
+}
 
