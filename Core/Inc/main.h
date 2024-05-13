@@ -67,8 +67,8 @@ void Error_Handler(void);
 #define MOD2_GPIO_Port GPIOA
 #define SD_CS_Pin GPIO_PIN_12
 #define SD_CS_GPIO_Port GPIOB
-#define TOGGLE_SW_Pin GPIO_PIN_8
-#define TOGGLE_SW_GPIO_Port GPIOA
+#define CH_BTN_Pin GPIO_PIN_8
+#define CH_BTN_GPIO_Port GPIOA
 #define ENC2_L_Pin GPIO_PIN_9
 #define ENC2_L_GPIO_Port GPIOA
 #define ENC2_R_Pin GPIO_PIN_10
@@ -81,6 +81,8 @@ void Error_Handler(void);
 #define ENC2_B_GPIO_Port GPIOB
 #define ENC1_B_Pin GPIO_PIN_5
 #define ENC1_B_GPIO_Port GPIOB
+#define MODE_BTN_Pin GPIO_PIN_8
+#define MODE_BTN_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

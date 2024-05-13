@@ -45,6 +45,7 @@ ADC_HandleTypeDef hadc1;
 I2C_HandleTypeDef hi2c1;
 
 I2S_HandleTypeDef hi2s1;
+DMA_HandleTypeDef hdma_spi1_tx;
 
 SPI_HandleTypeDef hspi2;
 
@@ -55,6 +56,7 @@ SPI_HandleTypeDef hspi2;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_I2S1_Init(void);
@@ -97,6 +99,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_ADC1_Init();
   MX_I2C1_Init();
   MX_I2S1_Init();
@@ -322,6 +325,22 @@ static void MX_SPI2_Init(void)
 }
 
 /**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA2_Stream2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -338,20 +357,20 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(TOGGLE_SW_GPIO_Port, TOGGLE_SW_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(CH_BTN_GPIO_Port, CH_BTN_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : SD_CS_Pin ENC2_B_Pin ENC1_B_Pin */
-  GPIO_InitStruct.Pin = SD_CS_Pin|ENC2_B_Pin|ENC1_B_Pin;
+  /*Configure GPIO pins : SD_CS_Pin ENC2_B_Pin ENC1_B_Pin MODE_BTN_Pin */
+  GPIO_InitStruct.Pin = SD_CS_Pin|ENC2_B_Pin|ENC1_B_Pin|MODE_BTN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : TOGGLE_SW_Pin */
-  GPIO_InitStruct.Pin = TOGGLE_SW_Pin;
+  /*Configure GPIO pin : CH_BTN_Pin */
+  GPIO_InitStruct.Pin = CH_BTN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(TOGGLE_SW_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(CH_BTN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : ENC2_L_Pin ENC2_R_Pin ENC1_L_Pin ENC1_R_Pin */
   GPIO_InitStruct.Pin = ENC2_L_Pin|ENC2_R_Pin|ENC1_L_Pin|ENC1_R_Pin;
