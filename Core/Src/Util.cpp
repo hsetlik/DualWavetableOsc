@@ -14,7 +14,7 @@ T Util::lerp(T a,T b, float ratio){
 
 template <typename T>
 T Util::valueAtPhase(T* arr, uint16_t len, float phase){
-	uint16_t lower = (uint16_t)(phase * (float) len);
+	uint16_t lower = (uint16_t)(phase * (float)len);
 	uint16_t upper = (lower + 1) % len;
 	float ratio = (phase * (float)len) - (float)lower;
 	return Util::lerp(arr[lower], arr[upper], ratio);
