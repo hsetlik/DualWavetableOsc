@@ -9,6 +9,7 @@
 #define INC_UTIL_H_
 
 #include "stm32f4xx_hal.h"
+#include <math.h>
 
 
 #ifdef __cplusplus

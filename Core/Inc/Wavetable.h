@@ -9,6 +9,7 @@
 #define INC_WAVETABLE_H_
 
 #include "stm32f4xx_hal.h"
+#include "Util.h"
 
 // tentatively storing our waves as 16-bit samples,
 
@@ -21,11 +22,13 @@
 #define WAVE_POINTS 512
 #define MAX_WAVE_FRAMES 13
 typedef uint16_t wave_idx_t;
+// alias for a single wavetable worth of data
+typedef int16_t wave_arr_t[WAVE_POINTS];
 
 enum WavetableGen {
 	TriangleSaw5,
 	TriangleSaw10,
-	SineSquare10,
+	SinePulse10,
 	PWM10
 };
 
@@ -35,11 +38,20 @@ enum WavetableGen {
 class WaveFrame
 {
 private:
-	int16_t  data[WAVE_POINTS];
+	wave_arr_t  data;
+	// helpers
+	static void createPulseWave(int16_t* wave, float dutyCycle);
+	static void createSawWave(int16_t* wave);
+	static void createTriangleWave(int16_t* wave);
+	static void createSineWave(int16_t* wave);
 public: //accessors for
 	WaveFrame(){}
 	float getFloat(wave_idx_t idx);
 	void setFloat(wave_idx_t idx, float value);
+	void setInt16(wave_idx_t idx, int16_t value);
+	int16_t* getBits(wave_idx_t idx);
+	// builder function
+	static void generateWavetables(WaveFrame* frm, uint8_t* numTables, WavetableGen gen);
 };
 
 
@@ -48,8 +60,9 @@ class WavetableVoice
 {
 private:
 	WaveFrame frames[MAX_WAVE_FRAMES];
-
-
+	uint8_t numFrames;
+public:
+	WavetableVoice(WavetableGen g=PWM10);
 };
 #endif //__cplusplus
 

@@ -7,6 +7,7 @@
 
 #ifndef INC_STATUSLEDS_H_
 #define INC_STATUSLEDS_H_
+
 #define SLOW_BLINK_MS 850
 #define FAST_BLINK_MS 300
 
