@@ -12,6 +12,8 @@ float WaveFrame::getFloat(wave_idx_t idx)
 }
 
 
+int16_t WaveFrame::get16(wave_idx_t idx) { return data[idx]; }
+
 void WaveFrame::setFloat(wave_idx_t idx, float value)
 {
 	data[idx] = (int16_t)(value * 32768.0f);
@@ -144,6 +146,7 @@ void WaveFrame::generateWavetables(WaveFrame* frm, uint8_t* numTables, Wavetable
 		const float dPhase = 1.0f / 10.0f;
 		float phase = 0.0f;
 		int16_t pulse1[WAVE_POINTS];
+
 		createPulseWave(pulse1, 0.15f);
 		int16_t pulse2[WAVE_POINTS];
 		createPulseWave(pulse2, 0.85f);
@@ -158,6 +161,49 @@ void WaveFrame::generateWavetables(WaveFrame* frm, uint8_t* numTables, Wavetable
 	}
 	}
 
+}
+//=============================================================================
+WavetableVoice::WavetableVoice(WavetableGen g) :
+		phase(0.0f),
+		prevHz(0.0f),
+		prevPhaseDelta(0.0f),
+		blendMode(false)
+
+{
+	WaveFrame::generateWavetables(frames, &numFrames, g);
+}
+
+
+int16_t WavetableVoice::nextValue16(float frequency, float position)
+{
+	// step 1: figure out if we need a new phase delta
+	if(prevHz != frequency){
+		prevPhaseDelta = frequency / (float)REAL_SAMPLE_RATE;
+		prevHz = frequency;
+	}
+	phase += prevPhaseDelta;
+	if(phase > 1.0f)
+		phase -= 1.0f;
+	// step 2: determine if we have one wave or more
+	if(numFrames <= 1) { // we only have one wave to deal with
+		int16_t* data = frames[0].getBits(0);
+		return Util::valueAtPhase(data, WAVE_POINTS, phase);
+	}
+
+	if(!blendMode) { // multiple waves but no blending
+		uint8_t lowerIdx = (uint8_t)(position * (float)numFrames);
+		int16_t* data = frames[lowerIdx].getBits(0);
+		return Util::valueAtPhase(data, WAVE_POINTS, phase);
+	} else { // multiple waves and blend mode
+		uint8_t lowerIdx = (uint8_t)(position * (float)numFrames);
+		uint8_t upperIdx = (lowerIdx + 1) % numFrames;
+		int16_t* lowerData = frames[lowerIdx].getBits(0);
+		int16_t* upperData = frames[upperIdx].getBits(0);
+		float ratio = (position * (float)numFrames) - (float)lowerIdx;
+		int16_t lower = Util::valueAtPhase(lowerData, WAVE_POINTS, phase);
+		int16_t upper = Util::valueAtPhase(upperData, WAVE_POINTS, phase);
+		return Util::lerp(lower, upper, ratio);
+	}
 }
 
 

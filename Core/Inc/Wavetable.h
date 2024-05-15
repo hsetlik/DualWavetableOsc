@@ -11,6 +11,8 @@
 #include "stm32f4xx_hal.h"
 #include "Util.h"
 
+#define REAL_SAMPLE_RATE 43402
+
 // tentatively storing our waves as 16-bit samples,
 
 
@@ -47,6 +49,7 @@ private:
 public: //accessors for
 	WaveFrame(){}
 	float getFloat(wave_idx_t idx);
+	int16_t get16(wave_idx_t idx);
 	void setFloat(wave_idx_t idx, float value);
 	void setInt16(wave_idx_t idx, int16_t value);
 	int16_t* getBits(wave_idx_t idx);
@@ -61,8 +64,16 @@ class WavetableVoice
 private:
 	WaveFrame frames[MAX_WAVE_FRAMES];
 	uint8_t numFrames;
+	// playback state
+	float phase;
+	float prevHz;
+	float prevPhaseDelta;
+	bool blendMode;
 public:
 	WavetableVoice(WavetableGen g=PWM10);
+	int16_t nextValue16(float frequency, float position);
+	float nextValue32(float frequency, float position);
+
 };
 #endif //__cplusplus
 
